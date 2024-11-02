@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки инкубатора</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Настройки инкубатора</h1>
+        </header>
+
+        <main>
+            <div class="settings">
+                <div class="setting-item">
+                    <label for="temperature-setting">Температура (°C):</label>
+                    <input type="number" id="temperature-setting" placeholder="36.7">
+                </div>
+
+                <div class="setting-item">
+                    <label for="humidity-setting">Влажность (%):</label>
+                    <input type="number" id="humidity-setting" placeholder="55">
+                </div>
+
+                <div class="setting-item">
+                    <label for="incubation-day-setting">День инкубации:</label>
+                    <input type="number" id="incubation-day-setting" placeholder="12">
+                </div>
+
+                <div class="egg-selection">
+                    <h2>Выберите тип яиц</h2>
+                    <select id="egg-type" onchange="updateSettings()">
+                        <option value="">-- Выберите тип яиц --</option>
+                        <option value="chicken">Куриное</option>
+                        <option value="quail">Перепелиное</option>
+                        <option value="budgerigar">Волнистого попугая</option>
+                        <option value="goose">Гусиное</option>
+                        <option value="ostrich">Страусиное</option>
+                        <option value="duck">Утиное</option>
+                    </select>
+                    <p id="selected-egg"></p>
+                </div>
+
+                <button onclick="saveSettings()">Сохранить настройки</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Управление инкубатором</p>
+        </footer>
+    </div>
+
+    <script>
+        // Данные для различных типов яиц
+        const eggData = {
+            chicken: { temperature: 37.5, humidity: 50, days: 21 },
+            quail: { temperature: 37.5, humidity: 45, days: 17 },
+            budgerigar: { temperature: 37.5, humidity: 50, days: 18 },
+            goose: { temperature: 37.5, humidity: 55, days: 28 },
+            ostrich: { temperature: 36.5, humidity: 40, days: 42 },
+            duck: { temperature: 37.5, humidity: 55, days: 28 }
+        };
+
+        function updateSettings() {
+            const select = document.getElementById('egg-type');
+            const selectedEgg = select.value;
+
+            // Если выбрано яйцо, заполняем соответствующие значения
+            if (selectedEgg in eggData) {
+                const data = eggData[selectedEgg];
+                document.getElementById('temperature-setting').value = data.temperature;
+                document.getElementById('humidity-setting').value = data.humidity;
+                document.getElementById('incubation-day-setting').value = data.days;
+                document.getElementById('selected-egg').innerText = `Вы выбрали: ${select.options[select.selectedIndex].text}`;
+            } else {
+                document.getElementById('temperature-setting').value = '';
+                document.getElementById('humidity-setting').value = '';
+                document.getElementById('incubation-day-setting').value = '';
+                document.getElementById('selected-egg').innerText = '';
+            }
+        }
+
+        function saveSettings() {
+            const temperature = document.getElementById('temperature-setting').value;
+            const humidity = document.getElementById('humidity-setting').value;
+            const incubationDay = document.getElementById('incubation-day-setting').value;
+            const eggType = document.getElementById('egg-type').value;
+
+            localStorage.setItem('temperature', temperature);
+            localStorage.setItem('humidity', humidity);
+            localStorage.setItem('incubationDay', incubationDay);
+            localStorage.setItem('eggType', eggType);
+
+            alert('Настройки сохранены!');
+            window.location.href = 'index.html'; // Возврат на главную страницу
+        }
+    </script>
+</body>
+</html>

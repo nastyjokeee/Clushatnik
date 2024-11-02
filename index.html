@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус инкубатора</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Статус инкубатора</h1>
+        </header>
+
+        <main>
+            <div class="status">
+                <div>
+                    <label>Температура (°C):</label>
+                    <input type="number" id="temperature" placeholder="36.7" onchange="updateChart()">
+                </div>
+                <div>
+                    <label>Влажность (%):</label>
+                    <input type="number" id="humidity" placeholder="55" onchange="updateChart()">
+                </div>
+                <div>
+                    <label>День инкубации:</label>
+                    <input type="number" id="incubationDay" placeholder="12">
+                </div>
+                <div>
+                    <button onclick="location.href='settings.html'">Настройки</button>
+                </div>
+            </div>
+
+            <h2>Графики</h2>
+            <canvas id="tempChart"></canvas>
+            <canvas id="humidityChart"></canvas>
+        </main>
+
+        <footer>
+            <p>Управление инкубатором</p>
+        </footer>
+    </div>
+
+    <script>
+        // Данные для графиков
+        const tempData = {
+            labels: [],
+            datasets: [{
+                label: 'Температура (°C)',
+                data: [],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        };
+
+        const humidityData = {
+            labels: [],
+            datasets: [{
+                label: 'Влажность (%)',
+                data: [],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        };
+
+        // Настройка графиков
+        const ctxTemp = document.getElementById('tempChart').getContext('2d');
+        const ctxHumidity = document.getElementById('humidityChart').getContext('2d');
+
+        const tempChart = new Chart(ctxTemp, {
+            type: 'line',
+            data: tempData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const humidityChart = new Chart(ctxHumidity, {
+            type: 'line',
+            data: humidityData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        function randomTemperature() {
+            return (Math.random() * (40 - 30) + 30).toFixed(1); // Случайная температура от 30 до 40 °C
+        }
+
+        function randomHumidity() {
+            return (Math.random() * (70 - 40) + 40).toFixed(0); // Случайная влажность от 40% до 70%
+        }
+
+        function updateChart() {
+            const temperature = parseFloat(document.getElementById('temperature').value) || randomTemperature();
+            const humidity = parseFloat(document.getElementById('humidity').value) || randomHumidity();
+
+            const now = new Date();
+
+            // Обновляем данные графиков
+            tempData.labels.push(now);
+            tempData.datasets[0].data.push(temperature);
+
+            humidityData.labels.push(now);
+            humidityData.datasets[0].data.push(humidity);
+
+            // Ограничиваем количество точек на графиках до 20
+            if (tempData.labels.length > 20) {
+                tempData.labels.shift();
+                tempData.datasets[0].data.shift();
+            }
+            if (humidityData.labels.length > 20) {
+                humidityData.labels.shift();
+                humidityData.datasets[0].data.shift();
+            }
+
+            // Обновляем графики
+            tempChart.update();
+            humidityChart.update();
+        }
+
+        // Функция для случайного обновления температуры и влажности
+        function simulateSensorData() {
+            document.getElementById('temperature').value = randomTemperature();
+            document.getElementById('humidity').value = randomHumidity();
+            updateChart();
+        }
+
+        // Запускаем обновление данных каждую минуту
+        setInterval(simulateSensorData, 60000);
+    </script>
+</body>
+</html>
